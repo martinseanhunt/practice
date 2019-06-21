@@ -157,7 +157,7 @@ class Home extends Component {
       <Container>
         <h1>Welcome To Shed Town! <br/><small>Tools For The Woodshed</small></h1>
 
-        <MainText>✋ Hi there, this is a simple tool I made to help me with my music practice. It mixes up key / chord combinations in a random order and saves the current order &amp; position to your browsers local storage so you can leave this application and pick up where you left off when you return. This is really useful for focusing on one chord a day in a random key until you've covered all combinations... This has been hugely helpful for me and I hope it can be of some use to you as well! 🎸</MainText>
+        <MainText>✋ Hi there, this is a simple tool I made to help me with my music practice. It mixes up key / chord combinations in a random order and saves the current order &amp; position to your browsers local storage so you can leave this application and pick up where you left off when you return. This is useful for focusing on one chord a day in a random key until you've covered all combinations... It's been hugely helpful for me and I hope it can be of some use to you as well! 🎸</MainText>
 
 
         <Cards>
