@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import localStorage from 'local-storage'
+import Head from 'next/head'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'shards-ui/dist/css/shards.min.css'
@@ -148,9 +149,15 @@ class Home extends Component {
 
     return (
       <>
+      <Head>
+        <title>Shed Town - Get in the shed!</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <GlobalStyle />
       <Container>
-        <MainText>✋ Hi there, this is a simple tool I made to help me with my music practice. It mixes up key / chord combinations in a random order and saves your current order / position to your browsers local storage so you can leave this application and pick up where you left off when you return. This is really useful for focusing on one chord a day in a random key until you've covered all combinations... This has been hugely helpful for me and I hope it can be of some use to you as well! 🎸</MainText>
+        <h1>Welcome To Shed Town! <br/><small>Tools For The Woodshed</small></h1>
+
+        <MainText>✋ Hi there, this is a simple tool I made to help me with my music practice. It mixes up key / chord combinations in a random order and saves the current order &amp; position to your browsers local storage so you can leave this application and pick up where you left off when you return. This is really useful for focusing on one chord a day in a random key until you've covered all combinations... This has been hugely helpful for me and I hope it can be of some use to you as well! 🎸</MainText>
 
 
         <Cards>
@@ -191,9 +198,17 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-top: 150px;
+  padding-top: 100px;
   text-align: center;
   flex-direction: column;
+
+  h1 {
+    font-size: 1.75rem;
+    line-height: 2rem;
+    small {
+      font-size: 1rem;
+    }
+  }
 
   @media (max-width: 768px) {
     padding-top: 50px;
@@ -204,7 +219,7 @@ const MainText = styled.p`
   max-width: 590px;
   display: block;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 10px 20px 0 20px;
 `
 
 const Cards = styled.div`
