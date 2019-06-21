@@ -194,12 +194,17 @@ const Container = styled.div`
   padding-top: 150px;
   text-align: center;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding-top: 50px;
+  }
 `
 
 const MainText = styled.p`
-  max-width: 550px;
+  max-width: 590px;
   display: block;
   margin: 0 auto;
+  padding: 0 20px;
 `
 
 const Cards = styled.div`
@@ -208,6 +213,11 @@ const Cards = styled.div`
   width: 100%;
   padding-top: 50px;
   text-align: left;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    padding-top: 30px;
+  }
 `
 
 const GlobalStyle = createGlobalStyle`

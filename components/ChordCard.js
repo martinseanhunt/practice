@@ -96,6 +96,13 @@ const StyledCard = styled(Card)`
   margin: 20px;
   max-width: 300px;
   flex-basis: 300px;
+  margin-bottom: 30px;
+
+  @media (max-width: 768px) {
+    flex-basis: 100%;
+    width: 100%;
+    max-width: 100%;
+  }
 
   .card-title {
     text-transform: capitalize;
