@@ -45,12 +45,10 @@ export default (props) => {
             <CardTitle>{currentChord}</CardTitle>
             <p>Practice the {currentChord} {chordTypeCopy} with purpouse!</p>
 
-            {chordType === 'seventh' && 
-              <ReactAudioPlayer
-                src={`/static/audio/${currentChord}.mp3`}
-                controls
-              />
-            }
+            <ReactAudioPlayer
+              src={`/static/audio/${chordType}/${currentChord}.mp3`}
+              controls
+            />
 
             <Buttons>
               {currentChordIndex > 0 && (
