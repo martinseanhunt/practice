@@ -1,28 +1,23 @@
 import { Component } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import localStorage from 'local-storage'
-import ReactAudioPlayer from 'react-audio-player'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'shards-ui/dist/css/shards.min.css'
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  CardFooter,
-  Button
-} from 'shards-react'
-
 import data from '../utils/data'
+import { getKeynames } from '../utils/helpers'
+
+import ChordCard from '../components/ChordCard'
 
 class Home extends Component {
   state = {
     unusedTriads: [],
+    usedTriads: [],
+    currentTriadIndex: null,
     unusedSevenths: [],
-    currentTriad: null,
-    currentSeventh: null
+    usedSevenths: [],
+    currentSeventhIndex: null,
   }
 
   componentDidMount = () => {
@@ -45,249 +40,155 @@ class Home extends Component {
 
     // saves if component has a chance to unmount
     this.saveStateToLocalStorage()
-}
+  }
 
+  // Converts application state to JSON and saves in browsers local storage
   saveStateToLocalStorage = () => localStorage.set('appState', JSON.stringify(this.state))
 
-  // TODO: refactor these functions so they can be shared for triads and sevenths
+  startSession = (chordType) => {
+    const keyNames = getKeynames(chordType)
 
-  startTriadSession = () => {
-    const { currentTriad, unusedTriads } = this.state
-
-    //return console.log(data.keys.forEach)
-
-    // Generate all possible triad combinations and save them to state
-    let triads = []
+    // Generate all possible chord combinations and save them to an array
+    let chords = []
     data.keys.forEach(key => {
-      data.triads.forEach(triad => {
-        triads.push(`${key} ${triad}`)
+      data[keyNames.chordTypePlural].forEach(chord => {
+        chords.push(`${key} ${chord}`)
       })
     })
 
-    // Select a random triad to start the session with and remove it from the 
-    // array of all triads
-    const index = Math.floor(Math.random()*triads.length)
-    const startingTriad = triads.splice(index, 1)
+    // Select a random chord to start the session with and remove it from the 
+    // array of all possible chords
+    const index = Math.floor(Math.random()*chords.length)
+    const startingChord = chords.splice(index, 1)
     
     this.setState({
-      // Save the possible traids minus the one we're using to start
-      unusedTriads: triads,
-      // Initialize the first triad
-      currentTriad: startingTriad
+      // Save the possible chords minus the one we're using to start
+      [keyNames.unusedChords]: chords,
+      // Add first chord to history array
+      [keyNames.usedChords]: startingChord,
+      // Start current index at 0
+      [keyNames.currentChordIndex]: 0
     })
   }
 
-  resetTriadSession = () => {  
-    this.setState({
-      unusedTriads: [],
-      currentTriad: null
-    })
-  }
+  resetSession = (chordType) => {  
+    const keyNames = getKeynames(chordType)
 
-  generateTriad = () => {
-    const { currentTriad, unusedTriads } = this.state
-
-    // If there are no unused triads and no current triad we're startin a new session
-    if (unusedTriads.length === 0 && currentTriad === null) 
-      return this.startTriadSession()
-
-    // if it's the last triad in the session, reset the session
-    if (unusedTriads.length === 0) 
-      return this.resetTriadSession()
-
-    // Get random index
-    const index = Math.floor(Math.random()*unusedTriads.length)
-    
-    // copy the array so it can be mutated
-    let triads = [...unusedTriads]
-
-    // Set the next traid and remove it from the array
-    const nextTriad = triads.splice(index, 1)
-
-    this.setState({
-      // Save the possible traids minus the one we're using next
-      unusedTriads: triads,
-      // Initialize the next triad
-      currentTriad: nextTriad
-    })
-  }
-
-  startSeventhSession = () => {
-    const { currentSeventh, unusedSevenths } = this.state
-
-    //return console.log(data.keys.forEach)
-
-    // Generate all possible triad combinations and save them to state
-    let sevenths = []
-    data.keys.forEach(key => {
-      data.sevenths.forEach(triad => {
-        sevenths.push(`${key} ${triad}`)
+    confirm(`This will start a new ${chordType} session with a new randomized order`)
+      && this.setState({
+        [keyNames.unusedChords]: [],
+        [keyNames.usedChords]: [],
+        [keyNames.currentChordIndex]: null
       })
-    })
-
-    // Select a random triad to start the session with and remove it from the 
-    // array of all triads
-    const index = Math.floor(Math.random()*sevenths.length)
-    const startingSeventh = sevenths.splice(index, 1)
-    
-    this.setState({
-      // Save the possible traids minus the one we're using to start
-      unusedSevenths: sevenths,
-      // Initialize the first triad
-      currentSeventh: startingSeventh
-    })
   }
 
-  resetSeventhSession = () => {
-    this.setState({
-      unusedSevenths: [],
-      currentSeventh: null
-    })
-  }
+  generateChord = (chordType) => {
+    const keyNames = getKeynames(chordType)
 
-  generateSeventh = () => {
-    const { currentSeventh, unusedSevenths } = this.state
+    // Get information from state for the relevant chord type
+    const currentChordIndex = this.state[keyNames.currentChordIndex]
+    const unusedChords = this.state[keyNames.unusedChords]
+    const usedChords = this.state[keyNames.usedChords]
 
-    // If there are no unused triads and no current triad we're startin a new session
-    if (unusedSevenths.length === 0 && currentSeventh === null) 
-      return this.startSeventhSession()
+    // If there are no used chords we're startin a new session for this chord type
+    if (usedChords.length === 0) 
+      return this.startSession(chordType)
+
+    // If the current history index is less than the length of the array
+    // of used chords, it means we're back in history and need to go forwards instead
+    // of generating a new chord
+    if((currentChordIndex + 1) < usedChords.length)
+      return this.setState(prevState => ({
+        [keyNames.currentChordIndex]: prevState[keyNames.currentChordIndex] + 1
+      }))
 
     // if it's the last triad in the session, reset the session
-    if (unusedSevenths.length === 0) 
-      return this.resetSeventhSession()
+    if (unusedChords.length === 0) 
+      return this.resetSession(chordType)
 
     // Get random index
-    const index = Math.floor(Math.random()*unusedSevenths.length)
+    const index = Math.floor(Math.random()*unusedChords.length)
     
     // copy the array so it can be mutated
-    let sevenths = [...unusedSevenths]
+    let chords = [...unusedChords]
 
     // Set the next traid and remove it from the array
-    const nextSeventh = sevenths.splice(index, 1)
+    const nextChord = chords.splice(index, 1)
 
-    this.setState({
-      // Save the possible traids minus the one we're using next
-      unusedSevenths: sevenths,
-      // Initialize the next triad
-      currentSeventh: nextSeventh
-    })
+    this.setState(prevState => ({
+      // Save the possible chords minus the one we're using next
+      [keyNames.unusedChords]: chords,
+      // Add next chord to history array
+      [keyNames.usedChords]: [...prevState[keyNames.usedChords], ...nextChord],
+      // increase current index
+      [keyNames.currentChordIndex]: prevState[keyNames.currentChordIndex] + 1
+    }))
+  }
+
+  goPreviousChord = (chordType) => {
+    const keyNames = getKeynames(chordType)
+
+    this.setState(prevState => ({
+      [keyNames.currentChordIndex]: prevState[keyNames.currentChordIndex] - 1
+    }))
   }
 
   render() {
-    const { currentTriad, unusedTriads, currentSeventh, unusedSevenths } = this.state
+    const { 
+      unusedTriads, 
+      usedTriads,
+      currentTriadIndex,
+      unusedSevenths,
+      usedSevenths,
+      currentSeventhIndex
+    } = this.state
+
+    const currentSeventh = usedSevenths[currentSeventhIndex]
+    const currentTriad = usedTriads[currentTriadIndex]
 
     return (
       <>
       <GlobalStyle />
       <Container>
-        <Card>
-          <CardHeader><b>Triads</b></CardHeader>
-            
-            {!currentTriad ? (
-              <CardBody>
-                <CardTitle>New Triad Session </CardTitle>
-                <p>Generate random triads covering all key / traid combinations.</p>
-                <Button onClick={this.generateTriad}>Get Started!</Button>
-              </CardBody>
-            ) : (
-              <CardBody>
-                <CardTitle>{currentTriad}</CardTitle>
-                <p>Practice the {currentTriad} traid with purpouse!</p>
-                
-                <Button onClick={this.generateTriad}>
-                  {unusedTriads.length === 0
-                    ? 'Reset Session'
-                    : 'Next!'
-                  }
-                </Button>
-              </CardBody>
-            )}
-          
-          <CardFooter>
-            Current Triad: {' '}
-            {currentTriad 
-              ? (data.keys.length * data.triads.length) - unusedTriads.length
-              : 0
-            }
-            {' / '} 
-            {data.keys.length * data.triads.length}
-            <a onClick={this.resetTriadSession}><small>reset traid session</small></a>
-          </CardFooter>
-        </Card>
+        <ChordCard 
+          chordType='triad'
+          currentChord={currentTriad}
+          unusedChords={unusedTriads}
+          usedChords={usedTriads}
+          currentChordIndex={currentTriadIndex}
+          startSession={this.startSession}
+          generateChord={this.generateChord}
+          resetSession={this.resetSession}
+          goPreviousChord={this.goPreviousChord}
+        />
 
-        <Card>
-          <CardHeader><b>7th Chords</b></CardHeader>
-          {!currentSeventh ? (
-              <CardBody>
-                <CardTitle>New 7th Session</CardTitle>
-                <p>Generate random 7ths covering all key / chord combinations.</p>
-                <Button onClick={this.generateSeventh}>Get Started!</Button>
-              </CardBody>
-            ) : (
-              <CardBody>
-                <CardTitle>{currentSeventh}</CardTitle>
-
-                <p>Practice the {currentSeventh} chord with purpouse!</p>
-
-                <ReactAudioPlayer
-                  src={`/static/audio/${currentSeventh}.mp3`}
-                  controls
-                />
-                
-                <Button onClick={this.generateSeventh}>
-                  {unusedSevenths.length === 0
-                    ? 'Reset Session'
-                    : 'Next!'
-                  }
-                </Button>
-              </CardBody>
-            )}
-          
-          <CardFooter>
-            Current Seventh: {' '}
-            {currentSeventh
-              ? (data.keys.length * data.sevenths.length) - unusedSevenths.length
-              : 0
-            }
-            {' / '} 
-            {data.keys.length * data.sevenths.length}
-            <a onClick={this.resetSeventhSession}><small>reset seventh session</small></a>
-          </CardFooter>
-        </Card>
+        <ChordCard 
+          chordType='seventh'
+          chordTypeReadable='7th chord'
+          currentChord={currentSeventh}
+          unusedChords={unusedSevenths}
+          usedChords={usedSevenths}
+          currentChordIndex={currentTriadIndex}
+          startSession={this.startSession}
+          generateChord={this.generateChord}
+          resetSession={this.resetSession}
+          goPreviousChord={this.goPreviousChord}
+        />
       </Container>
       </>
     )
   }
 }
 
+export default(Home)
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
   padding-top: 200px;
-
-  .card {
-    margin: 20px;
-    max-width: 300px;
-    flex-basis: 300px;
-  }
-
-  .card-footer a {
-    display: block;
-    cursor: pointer;
-    text-decoration: underline;
-    color: #007bff;
-  }
-
-  audio {
-    outline: none;
-    max-width: 100%;
-    margin-bottom: 1.75rem;
-  }
 `
 
-export default(Home)
-
 const GlobalStyle = createGlobalStyle`
- /* reset */
+ /* Global Styles Go Here */
 `
