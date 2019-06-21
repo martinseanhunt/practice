@@ -45,27 +45,31 @@ export default (props) => {
             <CardTitle>{currentChord}</CardTitle>
             <p>Practice the {currentChord} {chordTypeCopy} with purpouse!</p>
 
-            <ReactAudioPlayer
-              src={`/static/audio/${currentChord}.mp3`}
-              controls
-            />
+            {chordType === 'seventh' && 
+              <ReactAudioPlayer
+                src={`/static/audio/${currentChord}.mp3`}
+                controls
+              />
+            }
 
-            {currentChordIndex > 0 && (
+            <Buttons>
+              {currentChordIndex > 0 && (
+                <Button 
+                  onClick={() => goPreviousChord(chordType)}
+                >
+                  ← Back
+                </Button>
+              )}
+              
               <Button 
-                onClick={() => goPreviousChord(chordType)}
+                onClick={() => generateChord(chordType)}
               >
-                Back!
+                {unusedChords.length === 0 && (currentChordIndex + 1) === usedChords.length
+                  ? 'Reset Session'
+                  : 'Next →'
+                }
               </Button>
-            )}
-            
-            <Button 
-              onClick={() => generateChord(chordType)}
-            >
-              {unusedChords.length === 0 && (currentChordIndex + 1) === usedChords.length
-                ? 'Reset Session'
-                : 'Next!'
-              }
-            </Button>
+            </Buttons>
           </CardBody>
         )}
       
@@ -121,5 +125,14 @@ const StyledCard = styled(Card)`
     outline: none;
     max-width: 100%;
     margin-bottom: 1.75rem;
+  }
+`
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  .btn {
+    flex-basis: 45%;
   }
 `

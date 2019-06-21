@@ -150,30 +150,35 @@ class Home extends Component {
       <>
       <GlobalStyle />
       <Container>
-        <ChordCard 
-          chordType='triad'
-          currentChord={currentTriad}
-          unusedChords={unusedTriads}
-          usedChords={usedTriads}
-          currentChordIndex={currentTriadIndex}
-          startSession={this.startSession}
-          generateChord={this.generateChord}
-          resetSession={this.resetSession}
-          goPreviousChord={this.goPreviousChord}
-        />
+        <MainText>✋ Hi there, this is a simple tool I made to help me with my music practice. It mixes up key / chord combinations in a random order and saves your current order / position to your browsers local storage so you can leave this application and pick up where you left off when you return. This is really useful for focusing on one chord a day in a random key until you've covered all combinations... This has been hugely helpful for me and I hope it can be of some use to you as well! 🎸</MainText>
 
-        <ChordCard 
-          chordType='seventh'
-          chordTypeReadable='7th chord'
-          currentChord={currentSeventh}
-          unusedChords={unusedSevenths}
-          usedChords={usedSevenths}
-          currentChordIndex={currentTriadIndex}
-          startSession={this.startSession}
-          generateChord={this.generateChord}
-          resetSession={this.resetSession}
-          goPreviousChord={this.goPreviousChord}
-        />
+
+        <Cards>
+          <ChordCard 
+            chordType='triad'
+            currentChord={currentTriad}
+            unusedChords={unusedTriads}
+            usedChords={usedTriads}
+            currentChordIndex={currentTriadIndex}
+            startSession={this.startSession}
+            generateChord={this.generateChord}
+            resetSession={this.resetSession}
+            goPreviousChord={this.goPreviousChord}
+          />
+
+          <ChordCard 
+            chordType='seventh'
+            chordTypeReadable='7th chord'
+            currentChord={currentSeventh}
+            unusedChords={unusedSevenths}
+            usedChords={usedSevenths}
+            currentChordIndex={currentTriadIndex}
+            startSession={this.startSession}
+            generateChord={this.generateChord}
+            resetSession={this.resetSession}
+            goPreviousChord={this.goPreviousChord}
+          />
+        </Cards>
       </Container>
       </>
     )
@@ -186,7 +191,23 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-top: 200px;
+  padding-top: 150px;
+  text-align: center;
+  flex-direction: column;
+`
+
+const MainText = styled.p`
+  max-width: 550px;
+  display: block;
+  margin: 0 auto;
+`
+
+const Cards = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 50px;
+  text-align: left;
 `
 
 const GlobalStyle = createGlobalStyle`
