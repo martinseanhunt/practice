@@ -172,7 +172,7 @@ class Home extends Component {
             currentChord={currentSeventh}
             unusedChords={unusedSevenths}
             usedChords={usedSevenths}
-            currentChordIndex={currentTriadIndex}
+            currentChordIndex={currentSeventhIndex}
             startSession={this.startSession}
             generateChord={this.generateChord}
             resetSession={this.resetSession}
